@@ -1,0 +1,89 @@
+HTTP Request Methods
+
+1. GET
+- Purpose: Retrieve data from a server.
+- Characteristics:
+  - Safe and idempotent (doesn’t change server state).
+  - Can include query parameters in the URL.
+- Example:
+  GET /users/123  
+  Fetches the user with ID 123.
+
+2. POST
+- Purpose: Send data to the server to create a new resource.
+- Characteristics:
+  - Not idempotent (calling it multiple times may create multiple resources).
+  - Sends data in the request body (JSON, form data, etc.).
+- Example:
+  POST /users  
+  Body: { "name": "Alice", "email": "alice@example.com" }  
+  Creates a new user.
+
+3. PUT
+- Purpose: Update a resource completely (replace it).
+- Characteristics:
+  - Idempotent (multiple calls with same data result in the same state).
+  - Sends full resource representation in request body.
+- Example:
+  PUT /users/123  
+  Body: { "name": "Alice Smith", "email": "alice.smith@example.com" }  
+  Updates user 123 with the new data.
+
+4. PATCH
+- Purpose: Partially update a resource.
+- Characteristics:
+  - Idempotent in theory (depends on implementation).
+  - Sends only the fields you want to update.
+- Example:
+  PATCH /users/123  
+  Body: { "email": "alice.new@example.com" }  
+  Updates only the email of user 123.
+
+5. DELETE
+- Purpose: Remove a resource from the server.
+- Characteristics:
+  - Idempotent (deleting the same resource multiple times has the same effect after the first deletion).
+- Example:
+  DELETE /users/123  
+  Deletes user 123.
+
+6. HEAD
+- Purpose: Retrieve headers only, no response body.
+- Use Case: Check if a resource exists, or get metadata like content type or length.
+- Example:
+  HEAD /users/123  
+  Returns headers of user 123.
+
+7. OPTIONS
+- Purpose: Ask the server what HTTP methods are allowed on a resource.
+- Use Case: CORS preflight requests.
+- Example:
+  OPTIONS /users  
+  Server responds with allowed methods like GET, POST, etc.
+
+8. CONNECT & TRACE
+- Rarely used directly in APIs:
+  - CONNECT: For creating a tunnel to the server (used in proxies).
+  - TRACE: Echoes back the request (used for debugging).
+
+Quick Tip:
+- Safe methods: GET, HEAD, OPTIONS (do not change server data).
+- Idempotent methods: GET, PUT, DELETE, OPTIONS, HEAD, PATCH (should not produce different results if repeated).
+- Non-idempotent: POST (may create multiple resources).
+
+400 Bad Request: The server could not understand the request due to invalid syntax.
+
+401 Unauthorized: Authentication is required and has failed or has not yet been provided.
+
+403 Forbidden: The server understands the request but refuses to authorize it.
+
+404 Not Found: The requested resource could not be found.
+
+500 Internal Server Error: The server encountered an unexpected condition.
+
+502 Bad Gateway: The server received an invalid response from the upstream server.
+
+503 Service Unavailable: The server is not ready to handle the request, usually due to overload or maintenance.
+
+504 Gateway Timeout: The server did not receive a timely response from an upstream server.
+
