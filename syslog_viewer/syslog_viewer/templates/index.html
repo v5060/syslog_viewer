@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Syslog Viewer</title>
+  <style>
+    :root {
+      --bg:#f4f6f8;
+      --panel:#ffffff;
+      --border:#dcdfe3;
+      --primary:#0d6efd;
+      --success-bg:#d4edda; --success-tx:#155724;
+      --danger-bg:#f8d7da;  --danger-tx:#721c24;
+      --log-bg:#1e1e1e; --log-tx:#f1f1f1;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin:0; background:var(--bg);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      display:flex; height:100vh;
+    }
+    .sidebar {
+      width: min(420px, 100%);
+      background:var(--panel);
+      border-right:2px solid var(--border);
+      padding:20px;
+      overflow:auto;
+    }
+    .content {
+      flex:1; min-width:0; padding:20px; overflow:auto;
+    }
+    h2 { margin:0 0 14px; color:#333; }
+    form { margin-bottom:18px; }
+    label { font-weight:600; display:block; margin:10px 0 6px; }
+    input[type="file"], input[type="text"], button {
+      width:100%; padding:10px; border-radius:6px;
+      border:1px solid #c9cdd2; font-size:14px;
+    }
+    button {
+      margin-top:10px; background:var(--primary); color:#fff; border:none; cursor:pointer;
+    }
+    button:hover { filter:brightness(0.95); }
+
+    .alert { padding:10px; border-radius:6px; margin-bottom:10px; font-size:14px; }
+    .alert-success { background:var(--success-bg); color:var(--success-tx); }
+    .alert-danger  { background:var(--danger-bg);  color:var(--danger-tx); }
+
+    .results-wrap { height:100%; display:flex; flex-direction:column; gap:10px; }
+    .results {
+      background:var(--log-bg); color:var(--log-tx);
+      border-radius:8px; padding:12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size:14px; line-height:1.2;
+      white-space: pre-wrap; word-wrap: break-word; overflow:auto; max-height:80vh;
+    }
+    mark { background:#ffeb3b; color:#000; font-weight:700; padding:0 2px; border-radius:2px; }
+
+    /* Responsive: stack on small screens */
+    @media (max-width: 900px) {
+      body { flex-direction:column; }
+      .sidebar { width:100%; border-right:none; border-bottom:2px solid var(--border); }
+      .content { padding-top:12px; }
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <h2>Syslog Viewer</h2>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Upload -->
+    <form method="POST" enctype="multipart/form-data">
+      <label for="file">Upload Syslog File</label>
+      <input type="file" name="file" id="file" />
+      <button type="submit">Upload</button>
+    </form>
+
+    <!-- Search -->
+    <form method="POST">
+      <label for="pattern">Search Pattern</label>
+      <input type="text" name="pattern" id="pattern" placeholder="Enter regex or text"/>
+      <button type="submit">Search</button>
+    </form>
+  </aside>
+
+  <main class="content">
+    <div class="results-wrap">
+      <h2>Search Results</h2>
+      <div class="results">
+        {% if results and results|length > 0 %}
+          {% for line in results %}
+            {{ line|safe }}<br>
+          {% endfor %}
+        {% else %}
+          <em>No logs to display. Upload a file or run a search.</em>
+        {% endif %}
+      </div>
+    </div>
+  </main>
+</body>
+</html>
